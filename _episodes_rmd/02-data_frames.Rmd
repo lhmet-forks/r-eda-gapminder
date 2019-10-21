@@ -1,0 +1,54 @@
+---
+title: "Working with tabular data"
+teaching: 50
+exercises: 30
+questions:
+  - "How to import tabular data into R?"
+  - "What kind of object stores tabular data?"
+  - "How to investigate the contents of such object?"
+  - "How to deal with  missing data?"
+objectives: 
+  - "Import tabular data into R using the `read_csv()` function."
+  - "Understand the relationship between vectors and data.frames/tibbles and distinguish between them."
+  - "Discuss the importance of and apply basic quality control checks of data."
+  - "Apply the following functions to examine data: `summary()`, `str()`, `unique()`, `length()`"
+  - "Analyse vectors with missing data."
+keypoints:
+
+source: Rmd
+---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("02-")
+```
+
+
+## Data frames
+
+`data.frame` is a type of object that contains _tabular_ data. Although these 
+can be created "by hand", typically they are the result of reading data from a file. 
+
+There are several functions to read data into R, we're going to use one from the 
+`readr` package, which is part of the `tidyverse`:
+
+```{r}
+# load the library
+library(tidyverse)
+
+# read the data
+gapminder2010 <- read_csv("data/gapminder2010_socioeconomic.csv")
+```
+
+- import library
+- read data
+- callout: don't use read.csv
+- checklist: specify na values; ensure column types are correct; range of values; missing values
+- summary
+- str
+- subsetting
+- 
+
+
+
+{% include links.md %}

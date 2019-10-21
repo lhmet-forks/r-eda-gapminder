@@ -1,0 +1,26 @@
+---
+title: "Data visualisation with `ggplot2`"
+teaching: 50
+exercises: 30
+questions:
+  - "How to build a graph in R?"
+  - "What types of visualisation are suitable for different types of data?"
+objectives: 
+- "Recognise the necessary elements to build a plot using the `ggplot2` package."
+- "Use `ggplot2` to produce several kinds of visualisations (for continuous and/or discrete data)."
+- "Distinguish which types of visualisation are adequate for different types of data and questions."
+- "Discuss the importance of scales when analysing and/or visualising data"
+keypoints:
+
+source: Rmd
+---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("03-")
+```
+
+
+
+
+{% include links.md %}

@@ -1,0 +1,30 @@
+---
+title: "Manipulating variables (columns) with `dplyr`"
+teaching: 50
+exercises: 30
+questions:
+
+objectives: 
+- "use of the `dplyr` package to manipulate tabular data (add or modify variables, select and rename columns)"
+- "understand and use 'pipes' as a way to build a chain of operations on data"
+- "discuss some common issues with data cleaning and use functions from the `stringr` package to help solve them"
+- "discuss how to deal with missing data"
+keypoints:
+
+source: Rmd
+---
+
+```{r, include=FALSE}
+source("../bin/chunk-options.R")
+knitr_fig_path("04-")
+```
+
+cover:
+
+- data manipulation with `dplyr`: `select()` + `:` + `matches()`, `rename()`, `mutate()`
+- pipes `%>%`
+- cleaning up things: `stringr`, `na_if()`
+- factors to improve visualisation: `fct_reorder()` for example?
+- more missing data
+  - `drop_na()`: how to remove missing data (and when should we do it?)
+  - visualise missing data (special `naniar` geometries?) - data not missing at random!
