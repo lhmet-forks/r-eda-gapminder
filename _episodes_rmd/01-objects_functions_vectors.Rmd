@@ -1,7 +1,7 @@
 ---
 title: "Basic objects and data types in R"
-teaching: 50
-exercises: 30
+teaching: 20
+exercises: 10
 questions:
   - "What are the basic data structures and data types in R?"
   - "How can values be assigned to objects?"
@@ -14,9 +14,15 @@ objectives:
   - "Distinguish between the following terms: object, assign, function, arguments, options."
   - "Understand and distinguish between two fundamental vector types: numeric and character."
   - "Subset and extract values from vectors."
+  - "Understand how missing values are encoded in R."
 keypoints:
-  - "Access individual values by location using `[]`."
-  - "Access arbitrary sets of data using `[c(...)]`."
+  - "Assign values to objects using `<-`"
+  - "Functions perform operations on objects: they take inputs (arguments) and return outputs (values)."
+  - "The basic data structure in R is called a vector, which you construct with the `c()` function."
+  - "The main types of vector values are: numeric (or double), integer, character and logical."
+  - "To subset vectors use `[]`"
+  - "When doing vector operations R will 'recycle' shorter vectors if it needs to."
+  - "Missing data is supported by functions and is represented by the special value `NA`"
 source: Rmd
 ---
 
@@ -55,7 +61,7 @@ area_hectares
 > 
 > Object names can contain letters, numbers, underscores and periods. They
 > _cannot start with a number nor contain spaces_. Different people use
-> different conventions for long variable names, two common ones:
+> different conventions for long variable names, two common ones being:
 > 
 > - Underscore: `my_long_named_object`
 > - Camel case: `myLongNamedObject`
@@ -96,7 +102,7 @@ area_hectares <- 50
 
 Note that this did not change the value of `area_acres`. 
 
-> ### Keyboard shortcut
+> ## Keyboard shortcut
 > 
 > In RStudio, the keyboard shortcut for `<-` is <kbd>Alt</kbd> + <kbd>-</kbd> (PC) or 
 > <kbd>&#8984;</kbd> + <kbd>-</kbd> (Mac).
@@ -127,9 +133,9 @@ Note that this did not change the value of `area_acres`.
 Functions perform specific operations or tasks in R. A **function**
 usually gets one or more inputs called **arguments**. Functions often (but not
 always) return a **value**. A typical example would be the function `sqrt()`. The
-input (the argument) must be a number, and the return value (in fact, the
+input (the argument) must be a number, and the return value (the
 output) is the square root of that number. Executing a function ('running it')
-is called *calling* the function. An example of a function call is:
+is refered to as *calling* the function. An example of a function call is:
 
 ```{r, eval=FALSE, purl=FALSE}
 b <- sqrt(a)
@@ -139,7 +145,7 @@ Here, the value of `a` is given to the `sqrt()` function, the `sqrt()` function
 calculates the square root, and returns the value which is then assigned to
 the object `b`. This function is very simple, because it takes just one argument.
 
-The return 'value' of a function need not be numerical (like that of `sqrt()`),
+The return value of a function need not be numerical (like that of `sqrt()`),
 and it also does not need to be a single item: it can be a set of things, or
 even a dataset. We'll see that when we read data files into R.
 
@@ -252,7 +258,8 @@ Or even combine vectors together:
 c(some_animals, some_animals)
 ```
 
-> ### Creating sequences of numbers
+> ## Creating sequences of numbers
+> 
 > There are several shortcuts to create sequences of numbers, and these can be 
 very useful in different situations: 
 > 
@@ -260,45 +267,10 @@ very useful in different situations:
 > 1:10                           # integers from 1 to 10
 > 10:1                           # integers from 10 to 1
 > seq(1, 10, by = 2)             # from 1 to 10 by steps of 2
-> seq(1, 10, by = 0.6)           # from 1 to 10 by steps of 0.5
+> seq(10, 1, by = -0.5)           # from 10 to 1 by steps of -0.5
 > seq(1, 10, length.out = 20)    # 20 equally spaced values from 1 to 10
 > ```
 {: .callout}
-
-
-### Value coercion
-
-An important thing to be aware of is that **all of the elements in a vector are of 
-the same type**. Use the following exercise to see what R does when a vector contains 
-a mixed types of values.
-
-> ## Exercise
->
-> Use `class()` to check the data type of the following objects:
->
->  ```{r, results="hide"}
->  num_char <- c(1, 2, 3, "a")
->  num_logical <- c(1, 2, 3, TRUE)
->  char_logical <- c("a", "b", "c", TRUE)
->  tricky <- c(1, 2, 3, "4")
->  ```
-> > ## Solution
-> >
-> > ```{r, eval=FALSE}
-> > class(num_char)     # is a character
-> > class(num_logical)  # is numeric
-> > class(char_logical) # is character
-> > class(tricky)       # is character because 4 is quoted
-> > ```
-> {: .solution}
-{: .challenge}
-
-
-You've probably noticed that objects of different types get converted into a single, 
-shared type within a vector. In R, we call converting objects from one class into 
-another class _coercion_. These conversions happen according to a hierarchy,
-whereby some types get preferentially coerced into other types. The hierarchy is:
-`character > numeric > integer > logical`
 
 
 ### Subsetting vectors
@@ -313,7 +285,7 @@ some_animals <- c("cat", "dog", "giraffe", "dog")
 some_animals[2]
 
 # the third and second elements of the vector
-respondent_wall_type[c(3, 2)]
+some_animals[c(3, 2)]
 ```
 
 We can also repeat the indices to create an object with more elements than the
@@ -324,62 +296,84 @@ some_animals[c(1, 2, 2, 3, 3)]
 ```
 
 
+## Vectorised operations
+
+R deals with vector operations in a special way. Let's take the addition of two 
+numeric vectors as an example.
+
+When operating on two vectors of _the same length_, R takes the elements of each 
+vector one by one:
+
+```{r}
+c(10, 20, 30, 40) + c(1, 2, 3, 4)  # equivalent to c(10 + 1, 20 + 2, 30 + 3, 40 + 4)
+```
+
+When operating on two vectors of _different lengths_, R will "recycle" the shortest 
+vector (that is, it goes back to the start of the shortest vector when it runs out 
+of values to pair with the longest vector):
+
+```{r}
+c(10, 20, 30, 40) + c(1, 2)  # equivalent to c(10 + 1, 20 + 2, 30 + 1, 40 + 2)
+```
+
+This means that if we add a single number to a numeric vector, then R adds it to 
+every value of the vector (because it "recycles" that single value every time):
+
+```{r}
+c(10, 20, 30, 40) + 1  # equivalent to c(10 + 1, 20 + 1, 30 + 1, 40 + 1)
+```
+
+
 ## Missing data
 
-As R was designed to analyze datasets, it includes the concept of missing data. 
+As R was designed to analyze datasets, it includes the concept of missing data.
 Missing data are represented as the value `NA` (with no quotes around it).
 
-Some functions will return `NA` if the data you are working with include missing 
-values. This feature makes it harder to overlook the cases where you are dealing 
-with missing data. 
-
 ```{r, purl=FALSE}
-rooms <- c(2, 1, 1, NA, 4)
-mean(rooms)
-max(rooms)
-mean(rooms, na.rm = TRUE)
-max(rooms, na.rm = TRUE)
+some_numbers <- c(2, 1, 1, NA, 4)
+class(some_numbers)
 ```
 
-If your data include missing values, you may want to become familiar with the
-functions `is.na()`, `na.omit()`, and `complete.cases()`. See below for
-examples.
+Note that the presence of the missing value did not change the type of vector we 
+have, in this case it's a numeric vector, despite having missing data.
 
+Most functions in R will deal with `NA`, although in different ways. Some will 
+simply not want any missing data and warn you about it. Others will drop the missing 
+values (with or without a warning!). And yet others will optionally remove them 
+for you if you want. 
 
-```{r, purl=FALSE}
-## Extract those elements which are not missing values.
-rooms[!is.na(rooms)]
-
-## Returns the object with incomplete cases removed. The returned object is an atomic vector of type `"numeric"` (or `"double"`).
-na.omit(rooms)
-
-## Extract those elements which are complete cases. The returned object is an atomic vector of type `"numeric"` (or `"double"`).
-rooms[complete.cases(rooms)]
-```
+We will talk more about missing values througout the lessons, for now it's just good 
+to be aware that functions in R can deal with them. 
 
 > ## Exercise
 >
-> 1. Using this vector of rooms, create a new vector with the NAs removed.
+> Using this vector of numbers:
 >
->     ```r
->     rooms <- c(1, 2, 1, 1, NA, 3, 1, 3, 2, 1, 1, 8, 3, 1, NA, 1)
->     ```
-> 2. Use the function `median()` to calculate the median of the `rooms` vector.
+> ```r
+> some_numbers <- c(2, 1, 1, NA, 4)
+> ```
+> 
+> 1. Calculate the square root of each number. What happens to the missing value?
 >
-> 3. Use R to figure out how many households in the set use more than 2 rooms for sleeping.
->
+> 2. Calculate the mean of those numbers (`mean()` function). Look at the 
+> function's help to see how you can deal with missing values in this case.
+> 
 > > ## Solution
+> > 1. The `sqrt()` function returns the square-root of each number and returns 
+> > NA for the missing value:
+> > 
 > > ```{r, answer=TRUE}
-> > rooms <- c(1, 2, 1, 1, NA, 3, 1, 3, 2, 1, 1, 8, 3, 1, NA, 1)
-> > rooms_no_na <- rooms[!is.na(rooms)]
-> > # or
-> > rooms_no_na <- na.omit(rooms)
-> > # 2.
-> > median(rooms, na.rm = TRUE)
-> > # 3.
-> > rooms_above_2 <- rooms_no_na[rooms_no_na > 2]
-> > length(rooms_above_2)
+> > sqrt(some_numbers)
 > > ```
+> > 
+> > 2. The `mean()` function returns `NA` by default when there are missing values 
+> > in the vector. Looking at the function's help (`?mean`) shows that there is 
+> > an option to change the behaviour:
+> > 
+> > ```{r, answer=TRUE}
+> > mean(some_numbers, na.rm = TRUE)
+> > ```
+> > 
 > {: .solution}
 {: .challenge}
 
