@@ -79,7 +79,8 @@ pop_datapoints <- read_gapminder_datapoints(pop_datasets, geo)
 
 # reorder and rename columns
 pop_datapoints <- pop_datapoints %>%
-  select(country, name, world_region, economic_organisation, income_groups,
+  select(country_id = country, country = name,
+         world_region, economic_organisation, income_groups,
          main_religion = main_religion_2008,
          year,
          population_male = male_population_with_projections,
@@ -101,7 +102,8 @@ energy_datapoints <- read_gapminder_datapoints(energy_datasets, geo)
 
 # reorder and rename columns
 energy_datapoints <- energy_datapoints %>%
-  select(country, name, world_region, year,
+  select(country_id = country, country = name,
+         world_region, year,
          yearly_co2_emissions = yearly_co2_emissions_1000_tonnes,
          energy_use_per_person,
          coal_use_per_person = coal_consumption_per_cap,
@@ -116,17 +118,45 @@ energy_datapoints <- energy_datapoints %>%
 
 
 #
+# Introduce typos ---------------------------------------------------------
+#
+# Include some typos for teaching purposes
+set.seed(3) # make sure seed is set for reproducibility
+
+pop_datapoints <- pop_datapoints %>%
+  mutate(main_religion = str_replace(main_religion, "_", " ")) %>%
+  # add typos in religion
+  mutate(temp = main_religion) %>%
+  group_by(temp) %>%
+  mutate(main_religion = sample(c(unique(temp),
+                                  str_to_sentence(unique(temp))),
+                                 n(), replace = TRUE, prob = c(0.9, 0.1))) %>%
+  ungroup() %>%
+  mutate(main_religion = ifelse(temp == "eastern religions" & year == 2010 & country == "India",
+                                "eastern   religions", main_religion)) %>%
+  select(-temp) %>%
+  # encode NA's differently in some columns
+  mutate(life_expectancy_female = ifelse(is.na(life_expectancy_female),
+                                         "-", life_expectancy_female),
+         life_expectancy_male = ifelse(is.na(life_expectancy_male),
+                                       "-", life_expectancy_male))
+
+
+#
 # write data --------------------------------------------------------------
 #
 pop_datapoints %>%
   filter(year == 2010) %>%
-  write_csv("./_episodes_rmd/data/gapminder2010_socioeconomic.csv")
+  write_csv("./_episodes_rmd/data/gapminder2010_socioeconomic.csv",
+            na = "")
 
 pop_datapoints %>%
-  write_csv("./_episodes_rmd/data/gapminder1960to2010_socioeconomic.csv")
+  write_csv("./_episodes_rmd/data/gapminder1960to2010_socioeconomic.csv",
+            na = "")
 
 energy_datapoints %>%
-  write_csv("./_episodes_rmd/data/gapminder1960to2010_energy.csv")
+  write_csv("./_episodes_rmd/data/gapminder1960to2010_energy.csv",
+            na = "")
 
 
 #

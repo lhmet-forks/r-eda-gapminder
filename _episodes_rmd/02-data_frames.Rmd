@@ -1,7 +1,7 @@
 ---
 title: "Working with tabular data"
-teaching: 50
-exercises: 30
+teaching: 40
+exercises: 20
 questions:
   - "How to import tabular data into R?"
   - "What kind of object stores tabular data?"
@@ -23,6 +23,32 @@ source("../bin/chunk-options.R")
 knitr_fig_path("02-")
 ```
 
+## Presentation of the Gapminder datasets
+
+Give brief description of the data:
+
+| column                       | description                                                                                                                     |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| country_id                  | gapminder country identifier                                                                                                    |
+| country                     | country name                                                                                                                    |
+| world_region                | 6 world regions                                                                                                                 |
+| economic_organisation       | “OECD”, “G77” or “others”                                                                                                       |
+| income_groups               | categorical classification of income groups                                                                                     |
+| main_religion               | religion of the majority of population in 2008                                                                                  |
+| year                        | year data refers to                                                                                                             |
+| population_male             | total number of male population                                                                                                 |
+| population_female           | total number of female population                                                                                               |
+| income_per_person           | gross domestic product per person adjusted for differences in purchasing power                                                  |
+| life_expectancy             | average number of years a newborn child would live if current mortality patterns were to stay the same                          |
+| life_expectancy_female      | life expectancy at birth, females                                                                                               |
+| life_expectancy_male        | life expectancy at birth, males                                                                                                 |
+| children_per_woman          | total fertility rate                                                                                                            |
+| newborn_mortality           | death of children within the first 28 days per 1000 births                                                                      |
+| child_mortality             | death of children under 5 years old per 1000 births                                                                             |
+| employment_percent_female   | percentage of female population aged 15+ employed during the given year                                                         |
+| employment_percent_male     | percentage of male population aged 15+ employed during the given year                                                           |
+| hdi_human_development_index | index used to rank countries by level of “human development” accounting for health level, educational level and living standard |
+
 
 ## Data frames
 
@@ -30,15 +56,22 @@ knitr_fig_path("02-")
 can be created "by hand", typically they are the result of reading data from a file. 
 
 There are several functions to read data into R, we're going to use one from the 
-`readr` package, which is part of the `tidyverse`:
+`readr` package, which is part of the `tidyverse`. As such, we first need to load 
+the package into R's memory, by using the `library()` function:
+
+```{r, message=FALSE}
+library(tidyverse)
+```
+
+Our data is provided in CSV format (comma separated values). This format is a 
+regular text file, where each value (or column of the table) is separated by a 
+comma. To read such a file, we use the `read_csv()` function:
 
 ```{r}
-# load the library
-library(tidyverse)
-
-# read the data
-gapminder2010 <- read_csv("data/gapminder2010_socioeconomic.csv")
+gapminder2010 <- read_csv("data/gapminder2010_socioeconomic.csv",
+                          na = "")
 ```
+
 
 - import library
 - read data
@@ -48,6 +81,51 @@ gapminder2010 <- read_csv("data/gapminder2010_socioeconomic.csv")
 - str
 - subsetting
 - 
+
+> ## Reading data
+> 
+> The `readr` packages provides with several functions to read data in different formats. 
+> Some common ones are: 
+> 
+> `read_csv()` - for comma separated values
+> `read_tsv()` - for tab separated values
+> `read_delim()` 
+{: .callout}
+
+
+### Value coercion
+
+An important thing to be aware of is that **all of the elements in a vector are of 
+the same type**. Use the following exercise to see what R does when a vector contains 
+a mixed types of values.
+
+> ## Exercise
+>
+> Use `class()` to check the data type of the following objects:
+>
+>  ```{r, results="hide"}
+>  num_char <- c(1, 2, 3, "a")
+>  num_logical <- c(1, 2, 3, TRUE)
+>  char_logical <- c("a", "b", "c", TRUE)
+>  tricky <- c(1, 2, 3, "4")
+>  ```
+> > ## Solution
+> >
+> > ```{r, eval=FALSE}
+> > class(num_char)     # is a character
+> > class(num_logical)  # is numeric
+> > class(char_logical) # is character
+> > class(tricky)       # is character because 4 is quoted
+> > ```
+> {: .solution}
+{: .challenge}
+
+
+You've probably noticed that objects of different types get converted into a single, 
+shared type within a vector. In R, we call converting objects from one class into 
+another class _coercion_. These conversions happen according to a hierarchy,
+whereby some types get preferentially coerced into other types. The hierarchy is:
+`character > numeric > integer > logical`
 
 
 

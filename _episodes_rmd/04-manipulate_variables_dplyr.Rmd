@@ -22,9 +22,15 @@ knitr_fig_path("04-")
 cover:
 
 - data manipulation with `dplyr`: `select()` + `:` + `matches()`, `rename()`, `mutate()`
+  - `matches("_male")`
 - pipes `%>%`
 - cleaning up things: `stringr`, `na_if()`
+  - `na_if(employment_rate_male, "-")`
+  - `na_if(employment_rate_female, "-")`
+  - `str_to_lower(main_religion)`
+  - `str_trim(main_religion)`
 - factors to improve visualisation: `fct_reorder()` for example?
 - more missing data
   - `drop_na()`: how to remove missing data (and when should we do it?)
   - visualise missing data (special `naniar` geometries?) - data not missing at random!
+
