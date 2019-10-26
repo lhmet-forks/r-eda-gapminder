@@ -22,7 +22,60 @@ source: Rmd
 - `filter()`
 - how to obtain observations from our data based on certain criteria: `filter()`
   - intro to to logical operators
+- Logical operators for missing data
 - use of `ifelse` to correct some harder typos "manually"
+  - `ifelse(main_religion == "cristian", "christian", main_religion)`
 - highlighting observations in graphs with `ifelse()`?
 - saving cleaned version of our data: `write_csv()`
 
+
+
+If your data include missing values, you may want to become familiar with the
+functions `is.na()`, `na.omit()`, and `complete.cases()`. See below for
+examples.
+
+
+
+
+~~~
+## Extract those elements which are not missing values.
+rooms[!is.na(rooms)]
+~~~
+{: .language-r}
+
+
+
+~~~
+Error in eval(expr, envir, enclos): object 'rooms' not found
+~~~
+{: .error}
+
+
+
+~~~
+## Returns the object with incomplete cases removed. The returned object is an atomic vector of type `"numeric"` (or `"double"`).
+na.omit(rooms)
+~~~
+{: .language-r}
+
+
+
+~~~
+Error in na.omit(rooms): object 'rooms' not found
+~~~
+{: .error}
+
+
+
+~~~
+## Extract those elements which are complete cases. The returned object is an atomic vector of type `"numeric"` (or `"double"`).
+rooms[complete.cases(rooms)]
+~~~
+{: .language-r}
+
+
+
+~~~
+Error in eval(expr, envir, enclos): object 'rooms' not found
+~~~
+{: .error}

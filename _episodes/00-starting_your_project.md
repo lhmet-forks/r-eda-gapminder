@@ -35,22 +35,19 @@ To function correctly, RStudio needs R and therefore both need to be installed o
 
 Some advantages of using R for your data analysis include:
 
-- analysis steps are documented with code, allowing for greater reproducibility. 
-- there are thousands of packages (extensions) available, making R very a very flexible 
+- Analysis steps are documented with code, allowing for greater reproducibility. 
+- There are thousands of packages (extensions) available, making R a very flexible 
   and powerful tool, for a wide range of applications. 
-- analysis can be scaled to large data.
-- produce a wide range of high-quality graphics for data visualisation.
-- there is a large community of contributors.
+- Analysis can be scaled to large data.
+- Produce a wide range of high-quality graphics for data visualisation.
+- There is a large community of contributors.
 - it's free and open source.
 
 
 ### The RStudio Interface  
 
-Let's take a quick tour of RStudio.
-
-![RStudio_startup](../fig/00-RStudio_screen.png)
-
-RStudio is divided into four "panes". The default layout is:
+RStudio is divided into four "panes", illustrated below. 
+The default layout is:
 
 - Top Left - **Source**: this is where you edit your R scripts 
   (this panel might not appear until you create a script, which we demonstrate below).
@@ -59,6 +56,10 @@ RStudio is divided into four "panes". The default layout is:
   while working with R.
 - Bottom Right - **Files**/**Plots**/**Packages**/**Help**: several tabs that allow 
   you to navigate your files, view plots, view installed packages and search help files. 
+
+
+![RStudio_startup](../fig/00-RStudio_screen.png)
+
 
 
 ## Getting set up
@@ -79,8 +80,8 @@ scripts.
 RStudio provides a helpful set of tools to do this through its "**Projects**"
 interface, which not only creates a working directory for you but also remembers
 its location (allowing you to quickly navigate to it). The interface also 
-(optionally) preserves custom settings and open files to make it easier to 
-resume work after a break. 
+preserves custom settings and open files to make it easier to resume work after 
+a break. 
 
 
 ### Creating a new project

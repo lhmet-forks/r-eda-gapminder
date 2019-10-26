@@ -19,6 +19,17 @@ source: Rmd
 
 
 
+Graphs from Hans Rosling TED talk:
+
+- x = children_per_woman, y = life expectancy
+  - `geom_misspoint()` to illustrate data not missing at random
+- stacked histogram per region
+- x = GDP per capita, y = child survival
+
+For time series: 
+- highlight US vs. Vietnam over time
+- rate of change South Korea, Brasil, Uganda
+
 
 
 

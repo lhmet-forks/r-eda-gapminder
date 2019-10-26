@@ -8,8 +8,7 @@ questions:
   - "What are the basic data structures and data types in R?"
   - "How can values be assigned to objects?"
   - "How can subsets be extracted from vectors?"
-  - "What are the basic quality control checks that should be done when importing data?"
-  - "How can we deal with missing values in R?"
+  - "How are missing values represented in R?"
 objectives: 
   - "Assign values to objects in R."
   - "Use functions and access their documentation."
@@ -25,15 +24,16 @@ keypoints:
   - "To subset vectors use `[]`"
   - "When doing vector operations R will 'recycle' shorter vectors if it needs to."
   - "Missing data is supported by functions and is represented by the special value `NA`"
+  - "Vectors can only contain one type of value. If there are mixed types of values in a vector, R will _coerce_ those values into a single type according to the following hierarchy: character > numeric > logical"
 source: Rmd
 ---
 
 
 
 
-## Creating objects in R
+## Creating Objects in R
 
-Often, you want to save the output of an operation for using later. 
+Often, you want to save the output of an operation for later use. 
 In other words, we need to assign **values** to **objects**. 
 To create an object, we need to give it a name followed by the
 **assignment operator** `<-`, and the value we want to give to it.
@@ -67,7 +67,7 @@ area_hectares
 {: .output}
 
 
-> ## Naming objects
+> ## How should I name objects?
 > 
 > Object names can contain letters, numbers, underscores and periods. They
 > _cannot start with a number nor contain spaces_. Different people use
@@ -79,7 +79,7 @@ area_hectares
 > What you use is up to you, but **be consistent**.
 > 
 > Also note that R is case-sensitive so `area_hectares` is different from `Area_hectares`.
-{: .callout}
+{: .discussion}
 <p></p>
 
 Now that R has `area_hectares` in memory, we can do operations with it. 
@@ -162,14 +162,14 @@ Note that this did not change the value of `area_acres`.
 {: .challenge}
 
 
-## Functions and their arguments
+## Functions and Their Arguments
 
 Functions perform specific operations or tasks in R. A **function**
-usually gets one or more inputs called **arguments**. Functions often (but not
-always) return a **value**. A typical example would be the function `sqrt()`. The
-input (the argument) must be a number, and the return value (the
-output) is the square root of that number. Executing a function ('running it')
-is refered to as *calling* the function. An example of a function call is:
+usually gets one or more inputs called **arguments** and returns a **value**. 
+A typical example would be the function `sqrt()`. The input (the argument) must 
+be a number, and the return value (the output) is the square root of that number. 
+Executing a function ('running it') is refered to as *calling* the function. 
+An example of a function call is:
 
 
 ~~~
@@ -192,11 +192,11 @@ may either be specified by the user, or, if left out, take on a *default* value:
 these are called *options*. Options are typically used to alter the way the
 function operates. 
 
-Let's try a function that can take multiple arguments: `round()`.
+Let's try a function that can take multiple arguments: 
 
 
 ~~~
-round(3.14159)
+round(3.14159)  # round a number
 ~~~
 {: .language-r}
 
@@ -210,8 +210,8 @@ round(3.14159)
 Here, we've called `round()` with just one argument, `3.14159`, and it has
 returned the value `3`.  That's because the default is to round to the nearest
 whole number. If we want more digits we can see how to do that by getting
-information about the `round` function.  We can look at the help for this function 
-using `?round`.
+information about the `round` function.  We can look at the help of any function 
+by typing `?` followed by the function's name. In this case:
 
 
 ~~~
@@ -273,7 +273,7 @@ definition of a function with unfamiliar arguments to understand what you're
 doing.
 
 
-## Vectors and data types
+## Vectors and Data Types
 
 A vector is the most common and basic data structure in R. It consists of a collection 
 of values that can be created with the `c()` function. For example:
@@ -328,7 +328,7 @@ length(some_numbers)
 ~~~
 {: .output}
 
-The function `class()` indicates the class (the type of element) of an object:
+The function `class()` indicates what kind of object it is:
 
 
 ~~~
@@ -357,7 +357,7 @@ class(some_animals)
 ~~~
 {: .output}
 
-> ## data types in R
+> ## Data types in R
 > 
 > The main data types in R are:
 > 
@@ -410,14 +410,14 @@ very useful in different situations:
 > 1:10                           # integers from 1 to 10
 > 10:1                           # integers from 10 to 1
 > seq(1, 10, by = 2)             # from 1 to 10 by steps of 2
-> seq(10, 1, by = -0.5)           # from 10 to 1 by steps of -0.5
+> seq(10, 1, by = -0.5)          # from 10 to 1 by steps of -0.5
 > seq(1, 10, length.out = 20)    # 20 equally spaced values from 1 to 10
 > ~~~
 > {: .language-r}
 {: .callout}
 
 
-### Subsetting vectors
+### Subsetting Vectors
 
 If we want to extract one or several values from a vector, we must provide one
 or several indices in square brackets. For instance:
@@ -525,7 +525,7 @@ c(10, 20, 30, 40) + 1  # equivalent to c(10 + 1, 20 + 1, 30 + 1, 40 + 1)
 {: .output}
 
 
-## Missing data
+## Missing Data
 
 As R was designed to analyze datasets, it includes the concept of missing data.
 Missing data are represented as the value `NA` (with no quotes around it).
@@ -604,6 +604,76 @@ to be aware that functions in R can deal with them.
 > > 
 > {: .solution}
 {: .challenge}
+
+
+### Value Coercion
+
+An important thing to be aware of is that _all of the elements in a vector have
+to be of the same type_. 
+Use the following exercise to see what R does when a vector contains a mixed types of values.
+
+> ## Exercise
+>
+> Use `class()` to check the data type of the following objects:
+>
+>  
+>  ~~~
+>  num_char <- c(1, 2, 3, "a")
+>  num_logical <- c(1, 2, 3, TRUE)
+>  char_logical <- c("a", "b", "c", TRUE)
+>  tricky <- c(1, 2, 3, "4")
+>  ~~~
+>  {: .language-r}
+> > ## Solution
+> >
+> > 
+> > ~~~
+> > class(num_char)     # is a character
+> > class(num_logical)  # is numeric
+> > class(char_logical) # is character
+> > class(tricky)       # is character because 4 is quoted
+> > ~~~
+> > {: .language-r}
+> {: .solution}
+{: .challenge}
+
+You've probably noticed that vectors of different types get converted into a single, 
+shared type within a vector. In R, we call converting values from one type into 
+another _coercion_. These conversions happen according to a hierarchy,
+where some types get preferentially coerced into other types. The hierarchy is:
+`character > numeric > integer > logical`.
+
+There are functions that we can use to do explicit coercion between types, such 
+as `as.numeric()` and `as.character()`. 
+
+
+~~~
+num_char <- c(1, 2, 3, "a")   # this is a character vector
+as.numeric(num_char)
+~~~
+{: .language-r}
+
+
+
+~~~
+Warning: NAs introduced by coercion
+~~~
+{: .error}
+
+
+
+~~~
+[1]  1  2  3 NA
+~~~
+{: .output}
+
+In this example, the `as.numeric()` function converted all values that looked like 
+numbers, whereas the value "a" was converted to a missing value. The
+function also prints a warning, which is useful for us to be aware that 
+some values were impossible to convert to a number. 
+
+The importance of value coercion will become apparent in the next lesson, 
+when we import data from a file.
 
 
 
