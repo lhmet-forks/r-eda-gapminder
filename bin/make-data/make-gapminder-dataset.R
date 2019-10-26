@@ -139,7 +139,7 @@ pop_datapoints <- pop_datapoints %>%
   mutate(life_expectancy_female = ifelse(is.na(life_expectancy_female),
                                          "-", life_expectancy_female),
          life_expectancy_male = ifelse(is.na(life_expectancy_male),
-                                       "-", life_expectancy_male))
+                                       -999, life_expectancy_male))
 
 
 #

@@ -12,6 +12,19 @@ We are not teaching _programming_, thus the choice of focusing on `tidyverse`
 (although this choice is somewhat debatable, we could just as easily have chosen 
 `data.table` or even base R).
 
+**Data artifacts**
+
+There's some artifacts that were included on purpose (for teaching purposes). 
+These are:
+
+- `life_expectancy_female` is character because missing values encoded as "-"
+  - this allows introducing value coercion. And using `as.numeric()` can fix it.
+- `life_expectancy_male` has missing values encoded as -999 values
+  - here `as.numeric()` does not solve the problem. Instead we can use `ifelse()` trick.
+- `main_religion` has some typos: upper case and lower case and extra spaces in some cases.
+  - we can use `str_to_lower` and `str_squish` to solve these
+- 
+
 
 #### Session 1:
 
