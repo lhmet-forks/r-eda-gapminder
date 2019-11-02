@@ -37,22 +37,24 @@ pop_datasets <- c("male_population_with_projections",
                   "child_mortality_0_5_year_olds_dying_per_1000_born",
                   "life_expectancy_female",
                   "life_expectancy_male",
-                  "females_aged_15plus_employment_rate_percent",
-                  "males_aged_15plus_employment_rate_percent",
+                  #"females_aged_15plus_employment_rate_percent",
+                  #"males_aged_15plus_employment_rate_percent",
+                  "mean_years_in_school_men_25_years_and_older",
+                  "mean_years_in_school_women_25_years_and_older",
                   "hdi_human_development_index")
 
 # Energy
 energy_datasets <- c("yearly_co2_emissions_1000_tonnes",
-                     "coal_consumption_per_cap",
-                     "electricity_generation_per_person",
-                     "electricity_use_per_person",
-                     "hydro_power_generation_per_person",
-                     "natural_gas_production_per_person",
-                     "nuclear_power_generation_per_person",
+                     #"coal_consumption_per_cap",
+                     #"electricity_generation_per_person",
+                     #"electricity_use_per_person",
+                     #"hydro_power_generation_per_person",
+                     #"natural_gas_production_per_person",
+                     #"nuclear_power_generation_per_person",
+                     #"oil_consumption_per_cap",
+                     #"oil_production_per_person",
                      "energy_production_per_person",
-                     "energy_use_per_person",
-                     "oil_consumption_per_cap",
-                     "oil_production_per_person")
+                     "energy_use_per_person")
 
 # make function to read and tidy these data
 read_gapminder_datapoints <- function(datasets, geo_tbl){
@@ -91,8 +93,10 @@ pop_datapoints <- pop_datapoints %>%
          children_per_woman = children_per_woman_total_fertility,
          newborn_mortality = newborn_mortality_rate_per_1000,
          child_mortality = child_mortality_0_5_year_olds_dying_per_1000_born,
-         employment_percent_female = females_aged_15plus_employment_rate_percent,
-         employment_percent_male = males_aged_15plus_employment_rate_percent,
+         #employment_percent_female = females_aged_15plus_employment_rate_percent,
+         #employment_percent_male = males_aged_15plus_employment_rate_percent,
+         school_years_men = mean_years_in_school_men_25_years_and_older,
+         school_years_women = mean_years_in_school_women_25_years_and_older,
          hdi_human_development_index) %>%
   # remove one country (Liechtenstein) with no data for most variables
   filter(!is.na(income_per_person))
@@ -102,20 +106,23 @@ energy_datapoints <- read_gapminder_datapoints(energy_datasets, geo)
 
 # reorder and rename columns
 energy_datapoints <- energy_datapoints %>%
+  # keep only more recent years (too much missing data otherwise)
+  filter(year >= 1990) %>%
   select(country_id = country, country = name,
          world_region, year,
          yearly_co2_emissions = yearly_co2_emissions_1000_tonnes,
+         #coal_use_per_person = coal_consumption_per_cap,
+         #oil_use_per_person = oil_consumption_per_cap,
+         #electricity_use_per_person,
+         #electricity_generation_per_person,
+         #hydro_power_generation_per_person,
+         #natural_gas_production_per_person,
+         #nuclear_power_generation_per_person,
+         #oil_production_per_person,
          energy_use_per_person,
-         coal_use_per_person = coal_consumption_per_cap,
-         oil_use_per_person = oil_consumption_per_cap,
-         electricity_use_per_person,
-         energy_production_per_person,
-         electricity_generation_per_person,
-         hydro_power_generation_per_person,
-         natural_gas_production_per_person,
-         nuclear_power_generation_per_person,
-         oil_production_per_person)
-
+         energy_production_per_person) %>%
+  # remove one country (Liechtenstein) with no data for most variables
+  filter(country != "Liechtenstein")
 
 #
 # Introduce typos ---------------------------------------------------------
@@ -142,6 +149,15 @@ pop_datapoints <- pop_datapoints %>%
                                        -999, life_expectancy_male))
 
 
+# Energy dataset
+energy_datapoints <- energy_datapoints %>%
+  # Introduce a couple of typos
+  mutate(country = ifelse(country == "Brazil" & year == 1995, "Brasil", country),
+         energy_production_per_person = ifelse(country_id == "afg" & year == "1992",
+                                               "?",
+                                               energy_production_per_person))
+
+
 #
 # write data --------------------------------------------------------------
 #
@@ -155,7 +171,8 @@ pop_datapoints %>%
             na = "")
 
 energy_datapoints %>%
-  write_csv("./_episodes_rmd/data/gapminder1960to2010_energy.csv",
+  # write this as a tab-separated to illustrate usage of different function
+  write_tsv("./_episodes_rmd/data/gapminder1990to2010_energy.tsv",
             na = "")
 
 
