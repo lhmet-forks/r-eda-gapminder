@@ -67,7 +67,6 @@ area_hectares
 > - Camel case: `myLongNamedObject`
 > 
 > What you use is up to you, but **be consistent**.
-> 
 > Also note that R is case-sensitive so `area_hectares` is different from `Area_hectares`.
 {: .discussion}
 <p></p>
@@ -276,7 +275,7 @@ very useful in different situations:
 ### Subsetting Vectors
 
 If we want to extract one or several values from a vector, we must provide one
-or several indices in square brackets. For instance:
+or several indices in square brackets `[]`. For instance:
 
 ```{r, results='show', purl=FALSE}
 some_animals <- c("cat", "dog", "giraffe", "dog")
@@ -359,14 +358,14 @@ to be aware that functions in R can deal with them.
 > function's help to see how you can deal with missing values in this case.
 > 
 > > ## Solution
-> > 1. The `sqrt()` function returns the square-root of each number and returns 
+> > A1. The `sqrt()` function returns the square-root of each number and returns 
 > > NA for the missing value:
 > > 
 > > ```{r, answer=TRUE}
 > > sqrt(some_numbers)
 > > ```
 > > 
-> > 2. The `mean()` function returns `NA` by default when there are missing values 
+> > A2. The `mean()` function returns `NA` by default when there are missing values 
 > > in the vector. Looking at the function's help (`?mean`) shows that there is 
 > > an option to change the behaviour:
 > > 

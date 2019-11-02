@@ -40,7 +40,7 @@ for 2010 only and the same data for 1960 to 2010 (see the [setup](setup.html)
 page for instructions on how to download the data). In this lesson we will use 
 the 2010 data only, and then use the full dataset in future episodes.
 
-Both of these have the same columns of data, explained here. 
+Both of these have the same columns of data:
 
 | Column                       | Description                                                                                                                     |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -50,7 +50,7 @@ Both of these have the same columns of data, explained here.
 | economic_organisation       | “OECD”, “G77” or “others”                                                                                                       |
 | income_groups               | categorical classification of income groups                                                                                     |
 | main_religion               | religion of the majority of population in 2008                                                                                  |
-| year                        | year that each variable refers to                                                                                               |
+| year                        | year that each datapoint refers to                                                                                               |
 | population_male             | total number of male population                                                                                                 |
 | population_female           | total number of female population                                                                                               |
 | income_per_person           | gross domestic product per person adjusted for differences in purchasing power                                                  |
@@ -60,8 +60,8 @@ Both of these have the same columns of data, explained here.
 | children_per_woman          | total fertility rate                                                                                                            |
 | newborn_mortality           | death of children within the first 28 days per 1000 births                                                                      |
 | child_mortality             | death of children under 5 years old per 1000 births                                                                             |
-| employment_percent_female   | percentage of female population aged 15+ employed during the given year                                                         |
-| employment_percent_male     | percentage of male population aged 15+ employed during the given year                                                           |
+| school_years_men            | mean years in school, men 25 years and older    |
+| school_years_women          | mean years in school, women 25 years and older  |
 | hdi_human_development_index | index used to rank countries by level of “human development” accounting for health level, educational level and living standard |
 
 
@@ -248,7 +248,7 @@ The consequence of this is that when you read data, the `read_csv()`
 function will try to guess what data type each column is. And if it sees numbers 
 mixed with characters it will consider the column to be character (this is the 
 _value coercion_ that we've discussed about in the 
-[previous episode]({{ page.root }}{% link _episodes/01-objects_functions_vectors.md %})))
+[previous episode]({{ page.root }}{% link _episodes/01-objects_functions_vectors.md %})).
 
 We can see this feature affected the values in the `life_expectancy_female` column, 
 which are of type "character", when we would expect them to be "numeric":
@@ -310,9 +310,10 @@ gapminder2010[, c("country", "income_per_person")]
 > 
 > There are also some R packages that can help making these diagnostic analysis 
 > easier. One good one is the `skimr` package (which has a good 
-> [`introduction document`](https://cran.r-project.org/web/packages/skimr/vignettes/Using_skimr.html). > If you use the `skim()` function with your `data.frame` it will give you a tabular 
+> [`introduction document`](https://cran.r-project.org/web/packages/skimr/vignettes/Using_skimr.html). 
+> If you use the `skim()` function with your `data.frame` it will give you a tabular 
 > summary that will help you answer all these questions in one go!
-{: .callout}
+{: .discussion}
 
 
 {% include links.md %}
