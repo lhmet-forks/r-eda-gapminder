@@ -1,4 +1,5 @@
 _episodes
+fig
 *.pyc
 *~
 .DS_Store
