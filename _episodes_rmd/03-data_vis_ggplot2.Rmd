@@ -15,7 +15,7 @@ objectives:
   - "Distinguish which types of visualisation are adequate for different types of data and questions."
   - "Discuss the importance of scales when analysing and/or visualising data"
 keypoints:
-  - "To build a `ggplot2` graph you need to define: _data_, _aesthetics_, _geometries_ and _scales_."
+  - "To build a `ggplot2` graph you need to define: _data_, _aesthetics_, _geometries_ (and _scales_)."
   - "To change an _aesthetic_ of our graph **based on data**, include it **inside `aes()`**."
   - "To **manually** change an _aesthetic_ regardless of data then it goes **outside `aes()`**."
   - "You can overlay multiple geometries in the same graph, and control their aesthetics individually."
@@ -31,6 +31,9 @@ knitr_fig_path("03-")
 knitr::opts_chunk$set(fig.width=12, fig.height=7) 
 ```
 
+In this lesson we're going to learn how to build graphs using the `ggplot2` package 
+(part of `tidyverse`). 
+By the end of this lesson, you should be able to recreate some of the graphs below.
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
@@ -70,24 +73,6 @@ p1 / {p2 | p3}
 ```
 
 
-## Building a `ggplot2` graph
-
-To build a `ggplot2` graph you need 3 basic pieces of information:
-
-* A **data.frame** with data to be plotted
-* The variables (columns of `data.frame`) that will be _mapped_ to different 
-**aesthetics** of the graph (e.g. axis, colours, shapes, etc.)
-* the **geometry** that will be drawn on the graph (e.g. points, lines, 
-boxplots, violinplots, etc.)
-
-This translates into the following basic syntax:
-
-``` r
-ggplot(data = <data.frame>, 
-       mapping = aes(x = <column of data.frame>, y = <column of data.frame>)) +
-   geom_<type of geometry>()
-```
-
 As usual when starting an analysis on a new script, let's start by loading the 
 packages and reading the data:
 
@@ -98,6 +83,26 @@ library(tidyverse)
 gapminder2010 <- read_csv("data/gapminder2010_socioeconomic.csv", 
                           na = "")
 ```
+
+
+## Building a `ggplot2` graph
+
+To build a `ggplot2` graph you need 3 basic pieces of information:
+
+- A **data.frame** with data to be plotted
+- The variables (columns of `data.frame`) that will be _mapped_ to different 
+**aesthetics** of the graph (e.g. axis, colours, shapes, etc.)
+- the **geometry** that will be drawn on the graph (e.g. points, lines, 
+boxplots, violinplots, etc.)
+
+This translates into the following basic syntax:
+
+``` r
+ggplot(data = <data.frame>, 
+       mapping = aes(x = <column of data.frame>, y = <column of data.frame>)) +
+   geom_<type of geometry>()
+```
+
 
 For our first visualisation, let's try to recreate one of the visualisations 
 from [Hans Rosling's talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare).
@@ -137,8 +142,9 @@ ggplot(data = gapminder2010,
   geom_point()
 ```
 
-Notice how `geom_point()` noticed there were some missing values in the data, and 
-it warns you that they were removed. 
+Notice how `geom_point()` warns you that it had to remove some missing values
+(if the data is missing for at least one of the variables, then it cannot plot 
+the points).
 
 
 > ## Exercise
@@ -155,7 +161,7 @@ it warns you that they were removed.
 > > ## Answer
 > > 
 > > ```{r}
-> > library(naniar) # load the naniar package
+> > library(naniar) # load the naniar package; this should be placed on top of the script
 > > 
 > > ggplot(data = gapminder2010, 
 > >        mapping = aes(x = children_per_woman, y = life_expectancy)) +
@@ -371,9 +377,9 @@ ggplot(gapminder2010, aes(x = world_region, y = children_per_woman)) +
 > > 
 > > Although this graph looks appealing, the colour is redundant with the x-axis 
 > > labels. So, the same information is being shown with multiple _aesthetics_. 
-> > This is not necessarily incorrect, but we should generally avoid too much 
-> > gratuitous use of colour in graphs. At the very least we should remove the 
-> > legend from this graph. 
+> > This is not necessarily incorrect, but we should generally 
+> > [avoid too much gratuitous use of colour in graphs](https://serialmentor.com/dataviz/color-pitfalls.html). 
+> > At the very least we should remove the legend from this graph. 
 > > 
 > {: .solution}
 {: .challenge}
@@ -433,8 +439,8 @@ ggplot(gapminder2010,
 ## Modifying scales
 
 Often you want to change how the scales of your plot are defined. 
-In `ggplot2` scales can refer to the `x` and `y` aesthetics, but also to other 
-aesthetics such as `colour`, `shape`, `fill`, etc. 
+In `ggplot2` scales can refer to the _x_ and _y_ aesthetics, but also to other 
+aesthetics such as _colour_, _shape_, _fill_, etc. 
 
 We modify scales using the _scale_ family of functions. 
 These functions always follow the following naming convention: `scale_<aesthetic>_<type>`, 
@@ -454,7 +460,7 @@ for example to emphasise a particular range of the data and define the breaks of
 the axis ticks. 
 
 ```{r, warning=FALSE}
-# Emphasise countries with 0-3 children and > 70 years life expectancy
+# Emphasise countries with 1-3 children and > 70 years life expectancy
 ggplot(gapminder2010, 
        aes(x = children_per_woman, y = life_expectancy)) +
   geom_point() +
@@ -581,10 +587,10 @@ give a warning if it has fewer colours available than categories in the data.
 > ## Exercise
 > 
 > Modify the following code so that the point size is defined by the population size 
-> (use either `population_male` or `population_female` variable for this). The size 
+> (use either `population_male` or `population_female` variables for this). The size 
 > should be on a log scale. 
 > 
-> ```{r}
+> ```{r, warning=FALSE}
 > ggplot(data = gapminder2010, 
 >        mapping = aes(x = children_per_woman, y = life_expectancy)) +
 >   geom_point(aes(colour = world_region)) +
@@ -640,7 +646,7 @@ p
 ```
 
 
-#### Labels
+### Labels
 
 We can change the labels of every aesthetic using the `labs()` function, added on to 
 the graph. 
@@ -662,10 +668,9 @@ p +
 
 ### Themes
 
-You can change the overall look of a graph using the `theme_*` family of funtions. 
-
-These are added onto to the graph, for example, let's use `theme_classic()` for a 
-cleaner-looking graph:
+You can change the overall look of a graph using some pre-defined _themes_, 
+using the `theme_*` family of functions. For example, let's use `theme_classic()` 
+for a cleaner-looking graph:
 
 ```{r, warning=FALSE}
 p + 
@@ -735,7 +740,7 @@ from which script.
 > 
 > Choosing the right type of graph to answer particular questions (or convey a particular 
 > message) can be daunting. The [data-to-viz](https://www.data-to-viz.com/) website can 
-> be a great place to get inspiration from!
+> be a great place to get inspiration from.
 > 
 > Here are some common types of graph you may want to do for particular situations:
 > 
@@ -754,7 +759,7 @@ from which script.
 > - emphasising the right range of values (e.g. 
 >   [should your axis start at zero?](https://www.data-to-viz.com/caveat/cut_y_axis.html))
 > - use suitable data transformations (e.g. when comparing relative changes, consider 
->   a [log-scale](https://youtu.be/VSi0Z04fWj0)).
+>   a log-scale - see this [StatQuest video explaining logs](https://youtu.be/VSi0Z04fWj0)).
 > 
 > When used effectively, aesthetics (colour, shape, size, transparency, etc.) and 
 > facets can be used to display many dimensions on a single graph. For example, 
