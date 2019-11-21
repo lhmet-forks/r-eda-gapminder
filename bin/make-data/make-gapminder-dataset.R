@@ -146,7 +146,9 @@ pop_datapoints <- pop_datapoints %>%
   mutate(life_expectancy_female = ifelse(is.na(life_expectancy_female),
                                          "-", life_expectancy_female),
          life_expectancy_male = ifelse(is.na(life_expectancy_male),
-                                       -999, life_expectancy_male))
+                                       -999, life_expectancy_male)) #%>%
+  # unite country_id and country columns
+  #unite("id_name", country_id, country, sep = "_")
 
 
 # Energy dataset
