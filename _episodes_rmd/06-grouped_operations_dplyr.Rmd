@@ -28,3 +28,8 @@ grouped summaries.
 
 - then do `group_by() %>% mutate()`
   - one idea for this is to calculate grouped mean and calculate residual from it (concept of residual variation conditional on a variable)
+  - another is to do vector functions like `lead()`, `lag()`, `cumsum`, etc. See dplyr cheatsheet. 
+
+Idea for exercise:
+
+- plot number of missing values per year for some variable (to illustrate use `sum(is.na(x))`).
