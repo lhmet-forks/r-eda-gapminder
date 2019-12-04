@@ -11,7 +11,8 @@ objectives:
 - "Apply other grouped operations such as: `group_by()` + `filter()` and `group_by()` + `mutate()`."
 - "Recognise the importance of the `ungroup()` function."
 keypoints:
-
+- ""
+- "As a habit, always remember to `ungroup()` tables after performing grouping operations."
 source: Rmd
 ---
 
@@ -375,7 +376,7 @@ Here's the example:
 gapminder_clean %>% 
   group_by(year) %>% 
   mutate(population_pct = population_total/sum(population_total, na.rm = TRUE)*100) %>% 
-  # select a few columns only for visibility purposes only
+  # select a few columns for readability purpose only
   select(country, year, population_total, population_pct)
 ```
 
@@ -403,6 +404,52 @@ gapminder_clean %>%
 > - [Standard score (Z-score)](https://en.wikipedia.org/wiki/Standard_score). This 
 >   has no units. It can be interpreted as the number of standard deviations away 
 >   from the mean.
+> 
+> Take the following graphs as an example: 
+> 
+> ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+> p1 <- gapminder_clean %>% 
+>   ggplot(aes(year, child_mortality)) +
+>   geom_line(aes(group = country), alpha = 0.3) +
+>   labs(title = "Original data", y = "Child Mortality")
+> 
+> p2 <- gapminder_clean %>% 
+>   drop_na(income_per_person) %>% 
+>   group_by(country) %>% 
+>   mutate(mortality_centered = child_mortality - mean(child_mortality),
+>          mortality_scaled = mortality_centered/sd(child_mortality)) %>% 
+>   ggplot(aes(year, mortality_centered)) +
+>   geom_line(aes(group = country), alpha = 0.3) +
+>   labs(title = "Mean centered", y = "Child Mortality (mean centered)")
+> 
+> p3 <- gapminder_clean %>% 
+>   drop_na(income_per_person) %>% 
+>   group_by(country) %>% 
+>   mutate(mortality_centered = child_mortality - mean(child_mortality),
+>          mortality_scaled = mortality_centered/sd(child_mortality)) %>% 
+>   ggplot(aes(year, mortality_scaled)) +
+>   geom_line(aes(group = country), alpha = 0.3) +
+>   labs(title = "Z-score", y = "Child Mortality (z-score)")
+> 
+> library(patchwork)
+> p1 | p2 | p3
+> ```
+> 
+> These 3 graphs show different perspectives of the data:
+> 
+> - The first graph tells us how many children die in each country across years. 
+> - The second graph tells us how many children die in each country as a deviation 
+>   from the country's mean (e.g. 200 children above the mean or -100 children below 
+>   the mean).
+> - The third graph tells us how many children die in each country on a scale that 
+>   is _relative_ to the variation in that country (e.g. 2 standard deviations above 
+>   the mean and -2 standard deviations below the mean).
+> 
+> Which view of the data one chooses, depends on the underlying questions, and it's up 
+> for the analyst to decide. In this case, if what I'm interested in is how many 
+> children still die across the world, then I'd choose the graph on the left. 
+> But if I'm interested in understanding how countries compare in their relative efforts 
+> to reduce child mortality, then the 3rd graph migth be more adequate.
 > 
 {: .discussion}
 
@@ -495,89 +542,170 @@ gapminder_clean %>%
 
 ## Remove groups with `ungroup()`
 
-Need an example where things can go wrong...
+Whenever one does a grouping operation, it's always a good practice to remove 
+the groups afterwards, otherwise we may unintentonally be doing operations within 
+groups later on. 
+
+Take this example, where we calculate the total income of each world region and 
+year (and save it in a new object):
 
 ```{r}
-gapminder_clean %>% 
-  group_by(year) %>% 
-  filter(income_per_person == min(income_per_person, na.rm = TRUE)) %>% 
-  # this still counts per year (because did not ungroup)
-  count(country)
+total_incomes <- gapminder_clean %>% 
+  group_by(world_region, year) %>% 
+  summarise(total_income = sum(income_per_person))
+
+total_incomes
 ```
 
+As you see in the output, the grouping by `world_region` was retained (by default  
+`summarise()` drops the last grouping variable). Now, let's say that I wanted to transform 
+the `total_income` variable to a percentage of the total. 
+I can use `mutate()` to update my table:
+
 ```{r}
-gapminder_clean %>% 
-  group_by(year) %>% 
-  filter(income_per_person == min(income_per_person, na.rm = TRUE)) %>% 
-  # need to ungroup first
+total_incomes <- total_incomes %>% 
+  mutate(total_income_pct = total_income/sum(total_income)*100)
+```
+
+So, I should expect that `total_income_pct` adds up to 100%:
+
+```{r}
+sum(total_incomes$total_income_pct)
+```
+
+But it adds up to 600% instead! Why? Because the table was still grouped by `world_region`, 
+the percentages were calculated per world region. And there's 6 of them, therefore my 
+percentages in this case add up to 100% _within_ each world region, or 600% in total. 
+
+The way to resolve this is to ensure we remove any groups from our table, which we 
+can do with `ungroup()`. Here's the full string of commands, with the ungrouping 
+step added:
+
+```{r}
+total_incomes <- gapminder_clean %>% 
+  group_by(world_region, year) %>% 
+  # this calculates total income per world_region and year
+  summarise(total_income = sum(income_per_person)) %>% 
+  # this removes any leftover groups
   ungroup() %>% 
-  count(country)
+  # now we calculate the total income as a percentage
+  mutate(total_income_pct = total_income/sum(total_income)*100)
 ```
 
-This is a kind of interesting insight: relatively speaking, all countries actually 
-change similarly.
+And we can check our percentages now add up to 100%:
 
 ```{r}
-gapminder_clean %>% 
-  drop_na(income_per_person) %>% 
-  group_by(country) %>% 
-  mutate(mortality_centered = child_mortality - mean(child_mortality),
-         mortality_scaled = mortality_centered/sd(child_mortality)) %>% 
-  ggplot(aes(year, mortality_scaled)) +
-  geom_line(aes(group = country), alpha = 0.5)
+sum(total_incomes$total_income_pct)
 ```
 
 
 
 ## (optional) Advanced Examples 
 
-Grouped operations can be used to ask many questions...
+This section briefly demonstrates slightly more advanced examples of using 
+grouped operations, mixed with visualisation. The explanations are brief, but 
+can hopefully demonstrate the range of questions that we can ask from our data.
+
+* We can use conditional vector subsetting (with `[]`) inside these functions. 
+  In this example, we find the `country` where the `income_per_person` is lowest,
+  per year.
 
 ```{r}
 gapminder_clean %>% 
+  # remove missing values
   filter(!is.na(income_per_person)) %>% 
+  # for each year
   group_by(year) %>% 
+  # calculate the minimum income and the country where income is equal to the minimum
   summarise(income_min = min(income_per_person),
             country = country[income_per_person == min(income_per_person)]) %>% 
+  # visualise
   ggplot(aes(year, income_min)) +
   geom_line() +
   geom_point(aes(colour = country))
 ```
 
-Lead and lag operations (e.g. rate of change)
+* The `lead()` and `lag()` functions shift vectors by one value, so that we can use 
+  them for example to compare values ahead or behind the current value. 
+  The following example calculates the change in child mortality between the current 
+  year and the previous one.
 
 ```{r}
 gapminder_clean %>% 
+  # for each country
   group_by(country) %>% 
+  # order the table by year
   arrange(year) %>% 
+  # calculate difference between current and "lagged" child_mortality
   mutate(child_mortality_dif = child_mortality - lag(child_mortality)) %>% 
+  # plot
   ggplot(aes(year, child_mortality_dif)) +
   geom_line(aes(group = country), alpha = 0.1) +
   geom_hline(yintercept = 0, colour = "brown")
 ```
 
+* The `cumsum()` function can be used to calculate cumulative sums (see more 
+  cumulative functions in [dplyr's cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf))
+
 ```{r}
 gapminder_clean %>% 
+  # remove missing values
   filter(!is.na(income_per_person)) %>% 
+  # for each country
   group_by(country) %>% 
+  # order by year
   arrange(year) %>% 
+  # calculate cumulative income_per_person
   mutate(cumulative_wealth = cumsum(income_per_person)) %>% 
+  # plot
   ggplot(aes(year, cumulative_wealth)) +
   geom_line(aes(group = country)) +
-  scale_y_log10()
+  scale_y_continuous(trans = "log10")
 ```
 
 
-grouped summaries.
+Could include this in the box:
 
-- start with `count()` (simplest of grouped operations)
+```{r, echo=FALSE, message=FALSE}
+p1 <- gapminder_clean %>% 
+  ggplot(aes(year, child_mortality)) +
+  geom_line(aes(group = country), alpha = 0.3) +
+  labs(title = "Original data", y = "Child Mortality")
 
-- then do `group_by() %>% summarise()`
+p2 <- gapminder_clean %>% 
+  drop_na(income_per_person) %>% 
+  group_by(country) %>% 
+  mutate(mortality_centered = child_mortality - mean(child_mortality),
+         mortality_scaled = mortality_centered/sd(child_mortality)) %>% 
+  ggplot(aes(year, mortality_centered)) +
+  geom_line(aes(group = country), alpha = 0.3) +
+  labs(title = "Mean centered", y = "Child Mortality (mean centered)")
 
-- then do `group_by() %>% mutate()`
-  - one idea for this is to calculate grouped mean and calculate residual from it (concept of residual variation conditional on a variable)
-  - another is to do vector functions like `lead()`, `lag()`, `cumsum`, etc. See dplyr cheatsheet. 
+p3 <- gapminder_clean %>% 
+  drop_na(income_per_person) %>% 
+  group_by(country) %>% 
+  mutate(mortality_centered = child_mortality - mean(child_mortality),
+         mortality_scaled = mortality_centered/sd(child_mortality)) %>% 
+  ggplot(aes(year, mortality_scaled)) +
+  geom_line(aes(group = country), alpha = 0.3) +
+  labs(title = "Z-score", y = "Child Mortality (z-score)")
 
-Idea for exercise:
+library(patchwork)
+p1 | p2 | p3
+```
 
-- plot number of missing values per year for some variable (to illustrate use `sum(is.na(x))`).
+These 3 graphs show different perspectives of the data:
+
+- The first graph tells us how many children die in each country across years. 
+- The second graph tells us how many children die in each country as a deviation 
+  from the country's mean (e.g. 200 children above the mean or -100 children below 
+  the mean).
+- The third graph tells us how many children die in each country on a scale that 
+  is _relative_ to the variation in that country (e.g. 2 standard deviations above 
+  the mean and -2 standard deviations below the mean).
+
+Which view of the data one chooses, depends on the underlying questions, and it's up 
+for the analysis to decide. In this case, if what I'm interested in is how many 
+children still die across the world, then I'd choose the graph on the left. 
+But if I'm interested in understanding how countries compare in their relative efforts 
+to reduce child mortality, then the 3rd graph migth be more adequate.
