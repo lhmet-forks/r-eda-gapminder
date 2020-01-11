@@ -88,5 +88,7 @@ This session is about combining different datasets together and how to modify th
 - join different datasets together
 - distinguish between different ways to join data, and understand which one to choose depending on the desired outcome
 
+When teaching joins start by using the `band_members` and `band_instruments` data that 
+come with `dplyr`. It's much easier to demo what's happening in those small datasets. 
 
 {% include links.md %}

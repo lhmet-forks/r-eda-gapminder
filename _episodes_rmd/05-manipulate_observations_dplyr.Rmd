@@ -427,7 +427,7 @@ gapminder1960to2010 %>%
 > > 
 > > ```{r}
 > > gapminder1960to2010 %>% 
-> >   select(-country)
+> >   select(-country_id)
 > > ```
 > > 
 > > We used mutate to calculate `population_total`. To confirm we're doing the right thing, 
